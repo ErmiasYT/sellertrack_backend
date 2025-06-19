@@ -1,0 +1,120 @@
+# 🧠 Amazon Seller Tracker – FastAPI Backend
+
+This backend powers a SaaS that helps users track Amazon sellers and automatically detect new products those sellers list. It uses the Keepa API, Supabase, Redis, and Celery to deliver fast and scalable alerts.
+
+---
+
+## ⚙️ Features
+
+- 🔍 Track Amazon seller storefronts
+- 🚨 Detect new ASINs added by sellers
+- 🛒 Enrich product info using Keepa API
+- 💬 Alert users of new products in real-time
+- 📊 User dashboard with saved products & limits
+- 🧠 Token-aware API usage and queue management
+- 🧪 Fully modular FastAPI app with Celery workers
+
+---
+
+## 📁 Project Structure
+
+app/
+├── main.py # FastAPI entry point
+├── config.py # ENV + constants
+├── celery_worker.py # Celery app
+│
+├── api/ # Route handlers
+│ ├── alerts.py
+│ ├── auth.py
+│ ├── saved_products.py
+│ ├── seller.py
+│ ├── summary.py
+│ └── user.py
+│
+├── auth/ # JWT decoding
+│ └── supabase_jwt.py
+│
+├── db/ # Supabase client
+│ └── supabase.py
+│
+├── models/ # Pydantic + DB models
+│ ├── schemas.py
+│ ├── db_tables.py
+│ └── enums.py
+│
+├── services/ # Business logic
+│ ├── alert_service.py
+│ ├── keepa_service.py
+│ ├── product_service.py
+│ └── seller_service.py
+│
+├── workers/ # Celery tasks
+│ ├── queue_runner.py
+│ ├── scan_sellers.py
+│ └── token_manager.py
+│
+├── utils/ # Helpers
+│ ├── cache.py
+│ └── logger.py
+│
+├── requirements.txt
+
+yaml
+Copy
+Edit
+
+---
+
+## 📦 Environment Variables (`.env`)
+
+Create a `.env` file with the following keys:
+
+```env
+KEEPPA_API_KEY=your_keepa_key
+SUPABASE_URL=https://xyz.supabase.co
+SUPABASE_KEY=your_anon_or_service_key
+JWT_SECRET=your_supabase_jwt_secret
+
+REDIS_URL=redis://localhost:6379/0
+DAILY_TOKEN_LIMIT=1440
+TOKENS_PER_SELLER_SCAN=50
+CORS_ORIGINS=http://localhost:3000
+🚀 Running Locally
+Install dependencies:
+
+bash
+Copy
+Edit
+pip install -r requirements.txt
+Run FastAPI:
+
+bash
+Copy
+Edit
+uvicorn app.main:app --reload
+Run Celery:
+
+bash
+Copy
+Edit
+celery -A app.celery_worker.celery_app worker --loglevel=info
+🔁 How It Works
+Users track sellers via /seller/track
+
+Sellers are scanned every 24h via Celery queue
+
+New ASINs → Product details → Alerts → Dashboard
+
+System respects API limits using token_status
+
+🧪 Tech Stack
+FastAPI — backend framework
+
+Supabase — user auth + DB
+
+Keepa API — Amazon data
+
+Celery + Redis — background tasks
+
+Pydantic — data validation
+

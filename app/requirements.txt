@@ -1,0 +1,21 @@
+fastapi
+uvicorn[standard]
+httpx
+python-dotenv
+python-jose[cryptography]
+
+# Supabase
+supabase
+postgrest-py
+gotrue
+
+# Celery + Redis
+celery
+redis
+
+# Pydantic
+pydantic
+
+# Optional (logging, retries, dev)
+tenacity
+loguru
