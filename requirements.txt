@@ -1,21 +1,10 @@
-fastapi
-uvicorn[standard]
-httpx
-python-dotenv
-python-jose[cryptography]
-
-# Supabase
-supabase
-postgrest-py
-gotrue
-
-# Celery + Redis
-celery
-redis
-
-# Pydantic
-pydantic
-
-# Optional (logging, retries, dev)
-tenacity
-loguru
+fastapi==0.110.0
+uvicorn[standard]==0.27.0
+python-dotenv==1.0.1
+supabase==2.15.1
+celery==5.3.6
+redis==5.0.1
+loguru==0.7.2
+httpx==0.27.0
+python-jose[cryptography]==3.3.0
+tenacity==8.2.3
