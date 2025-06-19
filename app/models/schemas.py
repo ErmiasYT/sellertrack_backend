@@ -31,3 +31,16 @@ class UserInfo(BaseModel):
     plan_tier: str
     max_sellers: int
     current_count: int  # ← removed the comma here
+
+class AlertOut(BaseModel):
+    asin: str
+    product_title: Optional[str]
+    brand: Optional[str]
+    buybox_price: Optional[float]
+    seller_count: Optional[int]
+    found_at: datetime
+    seller_name: Optional[str]
+    seller_id: str
+    product_url: str
+    seller_url: str
+    is_new: bool
