@@ -1,6 +1,6 @@
 import redis
 import json
-from config import settings
+from app.config import settings
 
 # Connect to Redis
 r = redis.Redis.from_url(settings.REDIS_URL, decode_responses=True)
