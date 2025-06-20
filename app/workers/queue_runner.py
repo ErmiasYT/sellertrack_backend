@@ -46,3 +46,8 @@ def run_due_queue():
                 "next_attempt_at": next_retry.isoformat(),
                 "status": QueueStatus.QUEUED,
             }).eq("id", queue_id).execute()
+
+@shared_task
+def test_task():
+    print("✅ It works.")
+    return "success"
