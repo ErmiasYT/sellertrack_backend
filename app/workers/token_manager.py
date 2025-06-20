@@ -1,7 +1,7 @@
-from db.supabase import get_supabase_client
+from app.db.supabase import get_supabase_client
 from datetime import datetime, timedelta
-from config import settings
-from utils.logger import logger
+from app.config import settings
+from app.utils.logger import logger
 
 def update_token_usage(tokens_used: int):
     """
