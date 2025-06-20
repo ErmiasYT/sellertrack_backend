@@ -1,9 +1,10 @@
 from celery import shared_task
-from services.seller_service import scan_seller_and_detect_new_asins
-from db.supabase import get_supabase_client
+from app.services.seller_service import scan_seller_and_detect_new_asins
+from app.db.supabase import get_supabase_client
 from datetime import datetime, timedelta
-from models.enums import QueueStatus
-from utils.logger import logger  update this
+from app.models.enums import QueueStatus
+from app.utils.logger import logger
+
 
 def run_due_queue():
     """
