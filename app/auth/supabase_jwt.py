@@ -1,7 +1,7 @@
 from fastapi import Request, HTTPException
 from fastapi.security import HTTPBearer
 from jose import jwt, JWTError
-from config import settings
+from app.config import settings
 
 # Used in route dependencies
 def get_current_user_id(request: Request) -> str:
