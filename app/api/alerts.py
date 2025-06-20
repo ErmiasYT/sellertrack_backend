@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
-from db.supabase import get_supabase_client
-from auth.supabase_jwt import get_current_user_id
-from models.schemas import AlertOut
+from app.db.supabase import get_supabase_client
+from app.auth.supabase_jwt import get_current_user_id
+from app.models.schemas import AlertOut
 
 router = APIRouter()
 
