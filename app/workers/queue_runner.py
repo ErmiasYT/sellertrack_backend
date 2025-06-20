@@ -6,7 +6,7 @@ from models.enums import QueueStatus
 from utils.logger import logger
 
 
-@shared_task
+
 def run_due_queue():
     """
     Celery task: Processes all sellers in the queue whose next_attempt_at is now or past.
