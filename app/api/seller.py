@@ -5,7 +5,11 @@ from app.models.schemas import TrackSellerIn
 from datetime import datetime
 import uuid
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/seller",
+    tags=["seller"],
+    dependencies=[Security(verify_jwt_token)],  # ○ apply to all endpoints in this router
+)
 
 @router.get("/", summary="Get user's tracked sellers")
 def get_tracked_sellers(user_id: str = Depends(get_current_user_id)):
