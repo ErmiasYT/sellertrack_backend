@@ -3,35 +3,44 @@ from celery import Celery
 from app.config import settings
 from app.workers.queue_runner import run_due_queue
 from celery import shared_task
+from celery.schedules import crontab
 
-# Create Celery instance
 celery_app = Celery(
     "worker",
     broker=settings.REDIS_URL,
-    backend=None  # ⛔ disable result backend to avoid extra Redis writes
+    backend=None  # ⛔ disable result backend to save reads
 )
 
-# ✅ Add SSL options if using rediss://
+# ✅ SSL settings for rediss://
 if settings.REDIS_URL.startswith("rediss://"):
     celery_app.conf.broker_use_ssl = {
         "ssl_cert_reqs": ssl.CERT_REQUIRED
     }
 
-# Celery config (optional)
+# ✅ Celery settings (auto task, timeout, no excessive read, beat)
 celery_app.conf.update(
     task_track_started=True,
-    task_time_limit=300,
-    broker_connection_retry_on_startup=True
+    task_time_limit=60,  # ⏱️ 1 minute timeout
+    broker_connection_retry_on_startup=True,
+    worker_prefetch_multiplier=1,
+    accept_content=["json"],
+    task_serializer="json",
+    beat_schedule={
+        "run-queue-every-minute": {
+            "task": "app.workers.queue_runner.run_due_queue",
+            "schedule": 60.0,  # ⏲️ every 60 seconds
+        },
+    },
 )
 
-# Register tasks from modules
+# 📦 Register tasks
 celery_app.autodiscover_tasks([
     "app.workers.queue_runner",
     "app.workers.token_manager",
     "app.workers.scan_sellers",
 ])
 
-# ✅ Celery task wrapper
+# ✅ Task wrapper
 @shared_task(name="app.workers.queue_runner.run_due_queue")
 def run_due_queue_task():
-    run_due_queue()  # <-- Don't call with comma, just the function
+    run_due_queue()
