@@ -28,7 +28,8 @@ celery_app.conf.update(
     beat_schedule={
         "run-queue-every-minute": {
             "task": "app.workers.queue_runner.run_due_queue",
-            "schedule": 60.0,  # ⏲️ every 60 seconds
+            # you can pick the hour/minute you like; here it’s midnight UTC
+            "schedule": crontab(hour=0, minute=0),  
         },
     },
 )
