@@ -1,4 +1,4 @@
-from db.supabase import get_supabase_client
+from app.db.supabase import get_supabase_client
 from datetime import datetime
 from typing import List, Dict
 
