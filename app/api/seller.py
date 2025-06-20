@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
-from db.supabase import get_supabase_client
-from auth.supabase_jwt import get_current_user_id
-from models.schemas import TrackSellerIn
+from app.db.supabase import get_supabase_client
+from app.auth.supabase_jwt import get_current_user_id
+from app.models.schemas import TrackSellerIn
 from datetime import datetime
 import uuid
 
