@@ -7,7 +7,7 @@ from app.api import auth, user, seller, alerts, saved_products, summary
 app = FastAPI()
 
 # Middleware
-app.middleware("http")(verify_jwt_token)  # Validates Supabase JWT for all requests
+#app.middleware("http")(verify_jwt_token)  # Validates Supabase JWT for all requests
 
 # CORS settings (adjust if frontend is hosted elsewhere)
 app.add_middleware(
