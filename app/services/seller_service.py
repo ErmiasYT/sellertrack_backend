@@ -1,7 +1,7 @@
-from services.keepa_service import fetch_seller_asins, fetch_product_details
-from services.product_service import upsert_products, product_exists
-from services.alert_service import create_alerts_for_users
-from db.supabase import get_supabase_client
+from app.services.keepa_service import fetch_seller_asins, fetch_product_details
+from app.services.product_service import upsert_products, product_exists
+from app.services.alert_service import create_alerts_for_users
+from app.db.supabase import get_supabase_client
 from datetime import datetime
 
 def scan_seller_and_detect_new_asins(seller_id: str):
