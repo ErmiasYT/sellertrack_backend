@@ -7,6 +7,7 @@ celery_app = Celery(
     "worker",
     broker=settings.REDIS_URL,
     backend=settings.REDIS_URL
+    backend=None  # ⛔ disable result backend
 )
 
 # ✅ Add SSL options if using rediss://
