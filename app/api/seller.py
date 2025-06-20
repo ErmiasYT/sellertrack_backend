@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, 
 from app.db.supabase import get_supabase_client
 from app.auth.supabase_jwt import get_current_user_id
 from app.models.schemas import TrackSellerIn
@@ -8,7 +8,7 @@ import uuid
 router = APIRouter(
     prefix="/seller",
     tags=["seller"],
-    dependencies=[Security(verify_jwt_token)],  # ○ apply to all endpoints in this router
+    dependencies=[Depends(get_current_user_id)],  # ○ apply to all endpoints in this router
 )
 
 @router.get("/", summary="Get user's tracked sellers")
