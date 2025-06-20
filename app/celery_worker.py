@@ -1,6 +1,9 @@
 import ssl
 from celery import Celery
 from app.config import settings
+from app.workers.queue_runner import run_due_queue
+from celery import shared_task
+
 
 # Create Celery instance
 celery_app = Celery(
@@ -31,4 +34,8 @@ celery_app.autodiscover_tasks([
     "app.workers.token_manager",
     "app.workers.scan_sellers",
 ])
+
+@shared_task(name="app.workers.queue_runner.run_due_queue")
+def run_due_queue_task():
+    run_due_queue()
 
