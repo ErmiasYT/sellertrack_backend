@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from auth.supabase_jwt import verify_jwt_token
-from api import auth, user, seller, alerts, saved_products, summary
+from app.auth.supabase_jwt import verify_jwt_token
+from app.api import auth, user, seller, alerts, saved_products, summary
 
 app = FastAPI()
 
