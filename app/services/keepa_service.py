@@ -1,5 +1,5 @@
 import keepa
-from config import settings
+from app.config import settings
 from typing import List, Dict, Optional
 
 # Initialize Keepa client
