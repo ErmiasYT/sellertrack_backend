@@ -25,4 +25,9 @@ celery_app.conf.update(
 )
 
 # Import task modules to register them
-celery_app.autodiscover_tasks(["app.workers"])
+celery_app.autodiscover_tasks([
+    "app.workers.queue_runner",
+    "app.workers.token_manager",
+    "app.workers.scan_sellers",
+])
+
