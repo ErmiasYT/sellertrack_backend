@@ -5,8 +5,7 @@ from app.config import settings
 
 # Used in route dependencies
 def get_current_user_id(request: Request) -> str:
-    #user_id = request.state.user_id
-    user_id: str = "test-user-123"  # Hardcoded for now
+    user_id = request.state.user_id
     if not user_id:
         raise HTTPException(status_code=401, detail="Unauthorized")
     return user_id
