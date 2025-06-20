@@ -1,6 +1,6 @@
 from celery import Celery
-from workers.queue_runner import run_due_queue
-from utils.logger import logger
+from app.workers.queue_runner import run_due_queue
+from app.utils.logger import logger
 
 # Celery app (imported from celery_worker.py)
 from celery_worker import celery_app
