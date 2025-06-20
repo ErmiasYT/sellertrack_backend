@@ -1,14 +1,14 @@
 from fastapi import APIRouter, Depends, HTTPException, Security
 from app.db.supabase import get_supabase_client
-from app.auth.supabase_jwt import get_current_user_id
+from app.auth.supabase_jwt import get_current_user_id,bearer_scheme, verify_jwt_token
 from app.models.schemas import TrackSellerIn
 from datetime import datetime
 import uuid
 
 router = APIRouter(
     prefix="/seller",
+    dependencies=[Security(bearer_scheme), Depends(verify_jwt_token)],
     tags=["seller"],
-    dependencies=[Depends(get_current_user_id)],  # ○ apply to all endpoints in this router
 )
 
 @router.get("/", summary="Get user's tracked sellers")
@@ -28,7 +28,7 @@ def get_tracked_sellers(user_id: str = Depends(get_current_user_id)):
 
 @router.post("/track", summary="Track a new seller")
 #def track_seller(payload: TrackSellerIn, user_id: str = Depends(get_current_user_id)):
-def track_seller(payload: TrackSellerIn):
+def track_seller(payload: TrackSellerIn, user_id: str = Depends(get_current_user_id)):
     supabase = get_supabase_client()
     seller_id = payload.seller_id
 
