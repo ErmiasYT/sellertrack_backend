@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, 
+from fastapi import APIRouter, Depends, HTTPException, Security
 from app.db.supabase import get_supabase_client
 from app.auth.supabase_jwt import get_current_user_id
 from app.models.schemas import TrackSellerIn
