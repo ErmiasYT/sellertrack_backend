@@ -17,6 +17,13 @@ if settings.REDIS_URL.startswith("rediss://"):
         "ssl_cert_reqs": ssl.CERT_REQUIRED
     }
 
+# throttle Redis polling: block up to 1 hour per process
+celery_app.conf.broker_transport_options = {
+    "socket_timeout": 3600,       # BLPOP will wait up to 3600 s
+    "visibility_timeout": 3600,   # how long a reserved task is hidden
+}
+
+
 # ✅ Celery settings (auto task, timeout, no excessive read, beat)
 celery_app.conf.update(
     task_track_started=True,
