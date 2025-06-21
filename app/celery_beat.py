@@ -5,7 +5,8 @@ from app.config import settings
 celery_beat = Celery(
     "beat",
     broker=settings.REDIS_URL,
-    backend=settings.REDIS_URL
+    backend=None  # set to None if you don't need task results
+    #backend=settings.REDIS_URL
 )
 
 celery_beat.conf.beat_schedule = {
