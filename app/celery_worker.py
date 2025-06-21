@@ -18,10 +18,10 @@ if settings.REDIS_URL.startswith("rediss://"):
     }
 
 # throttle Redis polling: block up to 1 hour per process
-celery_app.conf.broker_transport_options = {
-    "socket_timeout": 3600,       # BLPOP will wait up to 3600 s
-    "visibility_timeout": 3600,   # how long a reserved task is hidden
-}
+#celery_app.conf.broker_transport_options = {
+ #   "socket_timeout": 3600,       # BLPOP will wait up to 3600 s
+ #   "visibility_timeout": 3600,   # how long a reserved task is hidden
+#}
 
 
 # ✅ Celery settings (auto task, timeout, no excessive read, beat)
@@ -37,8 +37,8 @@ celery_app.conf.update(
     task_serializer="json",
         # throttle Redis polling to once a minute
     broker_transport_options={
-        "socket_timeout": 24 * 60 * 60,        # BLPOP will block up to 60s
-        "visibility_timeout": 24 * 60 * 60,  # how long to hide a reserved task
+        "socket_timeout": 3600,        # BLPOP will block up to 60s
+        "visibility_timeout": 3600,  # how long to hide a reserved task
     },
     beat_schedule={
         "run-queue-every-minute": {
