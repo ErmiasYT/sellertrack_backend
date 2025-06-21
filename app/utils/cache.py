@@ -8,7 +8,7 @@ import redis
 r = redis.Redis.from_url(settings.REDIS_URL, decode_responses=True)
 
 # In-memory cache: max 1,000 items, 60 s TTL
-_local_cache = TTLCache(maxsize=1000, ttl=60)
+_local_cache = TTLCache(maxsize=1000, ttl=3600)
 _lock = threading.Lock()
 
 def cache_get(key: str):
