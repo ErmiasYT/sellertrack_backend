@@ -29,13 +29,16 @@ celery_app.conf.update(
     task_track_started=True,
     task_time_limit=60,  # ⏱️ 1 minute timeout
     broker_connection_retry_on_startup=True,
+    # enforce a single worker process so there's only one BLPOP
+    worker_concurrency=1,
     worker_prefetch_multiplier=1,
+    
     accept_content=["json"],
     task_serializer="json",
         # throttle Redis polling to once a minute
     broker_transport_options={
-        "socket_timeout": 60,        # BLPOP will block up to 60s
-        "visibility_timeout": 3600,  # how long to hide a reserved task
+        "socket_timeout": 24 * 60 * 60,        # BLPOP will block up to 60s
+        "visibility_timeout": 24 * 60 * 60,  # how long to hide a reserved task
     },
     beat_schedule={
         "run-queue-every-minute": {
