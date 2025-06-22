@@ -6,7 +6,6 @@ from datetime import datetime
 import uuid
 
 router = APIRouter(
-    prefix="/seller",
     dependencies=[Security(bearer_scheme), Depends(verify_jwt_token)],
     tags=["seller"],
 )
@@ -26,7 +25,7 @@ def get_tracked_sellers(user_id: str = Depends(get_current_user_id)):
         "last_checked": item["sellers"]["last_checked"]
     } for item in data]
 
-@router.post("/track", summary="Track a new seller")
+@router.post("/track-seller", summary="Track a new seller")
 #def track_seller(payload: TrackSellerIn, user_id: str = Depends(get_current_user_id)):
 def track_seller(payload: TrackSellerIn, user_id: str = Depends(get_current_user_id)):
     supabase = get_supabase_client()
