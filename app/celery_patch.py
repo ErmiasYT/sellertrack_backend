@@ -1,8 +1,7 @@
-# app/celery_patch.py
 from kombu.transport.redis import Channel
 
-# Patch drain_events to use longer BRPOP timeout
 def custom_drain_events(self, connection, timeout=60):
-    return self._brpop(connection, timeout=timeout)  # override to 60s
+    print("[✅ PATCH LOADED] Monkey patch for BRPOP applied")
+    return self._brpop(connection, timeout=timeout)
 
 Channel.drain_events = custom_drain_events
