@@ -8,34 +8,26 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["https://seller-spotlight-alerts.vercel.app"],  # 👈 your frontend domain
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-
-# Middleware
-app.middleware("http")(verify_jwt_token)  # Validates Supabase JWT for all requests
 
 # CORS settings (adjust if frontend is hosted elsewhere)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Or ["https://yourfrontend.com"]
+    allow_origins=["https://seller-spotlight-alerts.vercel.app"],  # Or ["https://yourfrontend.com"]
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+# Middleware
+app.middleware("http")(verify_jwt_token)  # Validates Supabase JWT for all requests
+
 # Register route groups
-app.include_router(auth.router, prefix="/auth")
-app.include_router(user.router, prefix="/user")
-app.include_router(seller.router, prefix="/seller")
-app.include_router(alerts.router, prefix="/alerts")
-app.include_router(saved_products.router, prefix="/saved")
-app.include_router(summary.router, prefix="/summary")
+app.include_router(auth.router, prefix="/api/auth")
+app.include_router(user.router, prefix="/api/user")
+app.include_router(seller.router, prefix="/api")  # ✅ to allow /api/track-seller
+app.include_router(alerts.router, prefix="/api/alerts")
+app.include_router(saved_products.router, prefix="/api/saved")  # ✅ good short route
+app.include_router(summary.router, prefix="/api/summary")
 
 @app.get("/")
 def root():
