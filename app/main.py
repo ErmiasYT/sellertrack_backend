@@ -4,8 +4,18 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.auth.supabase_jwt import verify_jwt_token
 from app.auth.supabase_jwt import get_current_user_id  
 from app.api import auth, user, seller, alerts, saved_products, summary
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["https://seller-spotlight-alerts.vercel.app"],  # 👈 your frontend domain
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 # Middleware
 app.middleware("http")(verify_jwt_token)  # Validates Supabase JWT for all requests
