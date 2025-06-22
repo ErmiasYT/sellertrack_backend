@@ -56,6 +56,17 @@ celery_app.conf.update(
     },
 )
 
+from kombu import Queue
+
+celery_app.conf.task_queues = (
+    Queue('celery', routing_key='celery'),  # Only use this one
+)
+
+celery_app.conf.task_default_queue = 'celery'
+celery_app.conf.task_default_exchange = 'celery'
+celery_app.conf.task_default_routing_key = 'celery'
+
+
 # 📦 Register tasks
 celery_app.autodiscover_tasks([
     "app.workers.queue_runner",
