@@ -38,6 +38,7 @@ celery_app.conf.update(
         # throttle Redis polling to once a minute
     broker_transport_options={
         "socket_timeout": 60,
+        "polling_interval": 60,
         "retry_on_timeout": True,
     },
 
