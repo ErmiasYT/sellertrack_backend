@@ -1,5 +1,5 @@
-import ssl
 import app.celery_patch
+import ssl
 from celery import Celery
 from app.config import settings
 from app.workers.queue_runner import run_due_queue
