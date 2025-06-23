@@ -41,6 +41,12 @@ celery_app.conf.update(
     },
 )
 
+celery_app.conf.beat_schedule = {
+    "run-due-queue-every-minute": {
+        "task": "app.workers.queue_runner.run_due_queue",
+        "schedule": crontab(minute="*"),   # every minute
+    },
+
 # Optional: single queue declaration (fine to keep)
 from kombu import Queue
 celery_app.conf.task_queues = (Queue("celery", routing_key="celery"),)
