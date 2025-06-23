@@ -27,6 +27,14 @@ if settings.REDIS_URL.startswith("rediss://"):
 
 # ✅ Celery settings (auto task, timeout, no excessive read, beat)
 celery_app.conf.update(
+    # throttle Redis polling to once a minute
+    celery_app.conf.broker_transport_options = {
+        "polling_interval": 60,   # worker sleeps 60 s between loops
+        "brpop_timeout"  : 60,    # Redis blocks 60 s when queue is empty
+        "visibility_timeout": 3600,
+        "retry_on_timeout": True,
+    }
+
     task_track_started=True,
     task_time_limit=60,  # ⏱️ 1 minute timeout
     broker_connection_retry_on_startup=True,
@@ -36,12 +44,6 @@ celery_app.conf.update(
     
     accept_content=["json"],
     task_serializer="json",
-        # throttle Redis polling to once a minute
-    broker_transport_options={
-        "socket_timeout": 60,
-        "polling_interval": 60,
-        "retry_on_timeout": True,
-    },
 
     # ───── DISABLE UNNEEDED EVENTS ─────
     worker_send_task_events=False,
