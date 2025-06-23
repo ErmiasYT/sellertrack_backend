@@ -1,4 +1,4 @@
-import app.sitecustomize        # PATCH FIRST
+import sitecustomize        # PATCH FIRST
 import ssl
 from celery import Celery
 from app.config import settings
