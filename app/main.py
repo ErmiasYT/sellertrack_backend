@@ -1,3 +1,6 @@
+import os
+print(">>> DEBUG - KEEPPA_API_KEY seen by FastAPI:", os.getenv("KEEPPA_API_KEY"))
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.tasks import router as tasks_router
