@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 load_dotenv()  # Load from .env file at root (if present)
 
 class Settings:
-    KEEPPA_API_KEY: str = os.getenv("KEEPA_API_KEY")
+    KEEPPA_API_KEY: str = os.getenv("KEEPPA_API_KEY")
     SUPABASE_URL: str = os.getenv("SUPABASE_URL")
     SUPABASE_KEY: str = os.getenv("SUPABASE_KEY")
     JWT_SECRET: str = os.getenv("JWT_SECRET", "")  # Optional override if needed
