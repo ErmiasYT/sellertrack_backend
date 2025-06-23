@@ -5,14 +5,13 @@ from kombu.transport.redis import Channel
 BRPOP_TIMEOUT = int(os.getenv("CELERY_BRPOP_TIMEOUT", "60"))
 
 # Only patch once
-if not getattr(Channel, "_patched_brpop", False):
-    _orig = Channel._brpop  # the underlying kombu hook
+if not getattr(Channel, "_patch_drain", False):
+    _orig = Channel.drain_events
 
-    def _brpop_long_poll(self, *args, **kwargs):
-        # force every BRPOP to block for BRPOP_TIMEOUT seconds
-        kwargs["timeout"] = BRPOP_TIMEOUT
-        return _orig(self, *args, **kwargs)
+    def drain_events_long_poll(self, connection, timeout=None):
+        # ignore the timeout Celery passes, use our long block
+        return _orig(self, connection, timeout=BRPOP_TIMEOUT)
 
-    Channel._brpop = _brpop_long_poll
-    Channel._patched_brpop = True
-    print(f"[✅ PATCH LOADED] Redis BRPOP timeout → {BRPOP_TIMEOUT}s")
+    Channel.drain_events = drain_events_long_poll
+    Channel._patch_drain = True
+    print(f"[✅ PATCH LOADED] Redis drain_events timeout → {BRPOP_TIMEOUT}s")
