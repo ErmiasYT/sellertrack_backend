@@ -28,6 +28,7 @@ app.include_router(seller.router, prefix="/api")  # ✅ to allow /api/track-sell
 app.include_router(alerts.router, prefix="/api/alerts")
 app.include_router(saved_products.router, prefix="/api/saved")  # ✅ good short route
 app.include_router(summary.router, prefix="/api/summary")
+app.include_router(tasks_router)
 
 @app.get("/")
 def root():
