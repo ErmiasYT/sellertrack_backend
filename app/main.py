@@ -12,7 +12,8 @@ app = FastAPI()
 # CORS settings (adjust if frontend is hosted elsewhere)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://seller-spotlight-alerts.vercel.app"],  # Or ["https://yourfrontend.com"]
+    allow_origins=["https://seller-spotlight-alerts.vercel.app"  # Or ["https://yourfrontend.com"]
+    "https://seller-spotlight-alerts-opmlq99rj-ermiasyts-projects.vercel.app"],  
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
