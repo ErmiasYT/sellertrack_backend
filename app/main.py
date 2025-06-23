@@ -8,19 +8,18 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
+app.middleware("http")(verify_jwt_token)  # Validates Supabase JWT for all requests
 
 # CORS settings (adjust if frontend is hosted elsewhere)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://seller-spotlight-alerts.vercel.app",  # Or ["https://yourfrontend.com"]
-    "https://seller-spotlight-alerts-opmlq99rj-ermiasyts-projects.vercel.app"],  
+    allow_origins=[
+        "https://seller-spotlight-alerts.vercel.app",  # Or ["https://yourfrontend.com"]
+        "https://seller-spotlight-alerts-opmlq99rj-ermiasyts-projects.vercel.app"],  
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# Middleware
-app.middleware("http")(verify_jwt_token)  # Validates Supabase JWT for all requests
 
 # Register route groups
 app.include_router(auth.router, prefix="/api/auth")
