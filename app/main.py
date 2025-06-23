@@ -8,8 +8,6 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
-app.middleware("http")(verify_jwt_token)  # Validates Supabase JWT for all requests
-
 # CORS settings (adjust if frontend is hosted elsewhere)
 app.add_middleware(
     CORSMiddleware,
@@ -20,6 +18,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.middleware("http")(verify_jwt_token)  # Validates Supabase JWT for all requests
 
 # Register route groups
 app.include_router(auth.router, prefix="/api/auth")
