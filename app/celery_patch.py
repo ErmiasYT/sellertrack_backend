@@ -1,7 +1,15 @@
+import os
 from kombu.transport.redis import Channel
 
-def custom_drain_events(self, connection, timeout=60):
-    print("[✅ PATCH LOADED] Monkey patch for BRPOP applied")
-    return self._brpop(connection, timeout=timeout)
+BRPOP_TIMEOUT = 60 #sec
+    
+# make sure we only patch once
+if not getattr(Channel, "_long_poll_patched", False):
 
-Channel.drain_events = custom_drain_events
+    def drain_events_long_poll(self, connection, timeout=None):
+        # Ignore Celery’s 1-second timeout and always block BRPOP_TIMEOUT
+        return self._brpop(connection, timeout=BRPOP_TIMEOUT)
+
+    Channel.drain_events = drain_events_long_poll
+    Channel._long_poll_patched = True
+    print(f"[✅ PATCH LOADED] Redis BRPOP timeout → {BRPOP_TIMEOUT}s")
