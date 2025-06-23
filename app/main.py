@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
+from app.api.tasks import router as tasks_router
 from app.auth.supabase_jwt import verify_jwt_token
 from app.auth.supabase_jwt import get_current_user_id  
 from app.api import auth, user, seller, alerts, saved_products, summary
