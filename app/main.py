@@ -5,6 +5,7 @@ from app.auth.supabase_jwt import verify_jwt_token
 from app.auth.supabase_jwt import get_current_user_id  
 from app.api import auth, user, seller, alerts, saved_products, summary
 from app.config import settings
+print(">>> DEBUG CORS_ORIGINS =", settings.CORS_ORIGINS)
 
 
 app = FastAPI()
