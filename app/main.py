@@ -1,33 +1,35 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.auth.supabase_jwt import verify_jwt_token
-from app.auth.supabase_jwt import get_current_user_id  
-from app.api import auth, user, seller, alerts, saved_products, summary
-from app.config import settings
-print(">>> DEBUG CORS_ORIGINS =", settings.CORS_ORIGINS)
 
+from app.config import settings
+from app.auth.supabase_jwt import verify_jwt_token   # your JWT middleware
+from app.api import auth, user, seller, alerts, saved_products, summary
 
 app = FastAPI()
 
-# CORS settings (adjust if frontend is hosted elsewhere)
+# ── CORS FIRST ──────────────────────────────────────────────────────────
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.CORS_ORIGINS,
+    allow_origins=settings.CORS_ORIGINS,      # e.g. ["https://seller-spotlight-alerts.vercel.app"]
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_methods=["*"],
     allow_headers=["*"],
 )
+# ────────────────────────────────────────────────────────────────────────
 
-app.middleware("http")(verify_jwt_token)  # Validates Supabase JWT for all requests
+# ── JWT / other middleware AFTER CORS ───────────────────────────────────
+app.middleware("http")(verify_jwt_token)
+# ────────────────────────────────────────────────────────────────────────
 
-# Register route groups
-app.include_router(auth.router, prefix="/api/auth")
-app.include_router(user.router, prefix="/api/user")
-app.include_router(seller.router, prefix="/api")  # ✅ to allow /api/track-seller
-app.include_router(alerts.router, prefix="/api/alerts")
-app.include_router(saved_products.router, prefix="/api/saved")  # ✅ good short route
-app.include_router(summary.router, prefix="/api/summary")
+# Route groups (router files have no global dependencies)
+app.include_router(auth.router,          prefix="/api/auth")
+app.include_router(user.router,          prefix="/api/user")
+app.include_router(seller.router,        prefix="/api")            # /api/track-seller
+app.include_router(alerts.router,        prefix="/api/alerts")
+app.include_router(saved_products.router, prefix="/api/saved")
+app.include_router(summary.router,       prefix="/api/summary")
 
+# Simple root check
 @app.get("/")
 def root():
     return {"message": "Amazon Seller Tracker API running"}
