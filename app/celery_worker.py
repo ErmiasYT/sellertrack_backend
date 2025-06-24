@@ -46,6 +46,7 @@ celery_app.conf.beat_schedule = {
         "task": "app.workers.queue_runner.run_due_queue",
         "schedule": crontab(minute="*"),   # every minute
     },
+}
 
 # Optional: single queue declaration (fine to keep)
 from kombu import Queue
