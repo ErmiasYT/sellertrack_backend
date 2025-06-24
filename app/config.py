@@ -1,19 +1,20 @@
-import os
 from dotenv import load_dotenv
+from pydantic import BaseSettings
+from typing import List
 
-load_dotenv()  # Load from .env file at root (if present)
+load_dotenv()
 
-class Settings:
-    KEEPPA_API_KEY: str = os.getenv("KEEPPA_API_KEY")
-    SUPABASE_URL: str = os.getenv("SUPABASE_URL")
-    SUPABASE_KEY: str = os.getenv("SUPABASE_KEY")
-    JWT_SECRET: str = os.getenv("JWT_SECRET", "")  # Optional override if needed
+class Settings(BaseSettings):
+    KEEPPA_API_KEY: str
+    SUPABASE_URL: str
+    SUPABASE_KEY: str
+    JWT_SECRET: str = ""
+    REDIS_URL: str = "redis://localhost:6379/0"
+    DAILY_TOKEN_LIMIT: int = 1440
+    TOKENS_PER_SELLER_SCAN: int = 50
+    CORS_ORIGINS: List[str] = ["*"]
 
-    REDIS_URL: str = os.getenv("REDIS_URL", "redis://localhost:6379/0")
-
-    DAILY_TOKEN_LIMIT: int = int(os.getenv("DAILY_TOKEN_LIMIT", "1440"))
-    TOKENS_PER_SELLER_SCAN: int = int(os.getenv("TOKENS_PER_SELLER_SCAN", "50"))
-
-    CORS_ORIGINS = os.getenv("CORS_ORIGINS", "*").split(",")
+    class Config:
+        env_file = ".env"
 
 settings = Settings()
