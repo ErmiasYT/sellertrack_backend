@@ -1,75 +1,65 @@
-from fastapi import APIRouter, Depends, HTTPException, Security
-from app.db.supabase import get_supabase_client
-from app.auth.supabase_jwt import get_current_user_id,bearer_scheme, verify_jwt_token
-from app.models.schemas import TrackSellerIn
-from datetime import datetime
-import uuid
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from app.auth.supabase_jwt import verify_jwt_token
+from app.auth.supabase_jwt import get_current_user_id  
+from app.api import auth, user, seller, alerts, saved_products, summary
+from app.config import settings
 
-router = APIRouter(
-    tags=["seller"],
+# Debug: Print the actual CORS origins being used
+print(">>> DEBUG CORS_ORIGINS =", settings.CORS_ORIGINS)
+print(">>> DEBUG CORS_ORIGINS type =", type(settings.CORS_ORIGINS))
+
+app = FastAPI()
+
+# CORS settings using the config - apply FIRST
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.CORS_ORIGINS,
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["*"],
+    expose_headers=["*"],
 )
 
-@router.get("/", summary="Get user's tracked sellers")
-def get_tracked_sellers(user_id: str = Depends(get_current_user_id)):
-    supabase = get_supabase_client()
+# JWT middleware applied AFTER CORS
+app.middleware("http")(verify_jwt_token)
 
-    result = supabase.table("tracked_sellers").select("*,sellers(*)").eq("user_id", user_id).execute()
-    data = result.data or []
+# Register route groups
+app.include_router(auth.router, prefix="/api/auth")
+app.include_router(user.router, prefix="/api/user")
+app.include_router(seller.router, prefix="/api")  # This creates /api/track-seller
+app.include_router(alerts.router, prefix="/api/alerts")
+app.include_router(saved_products.router, prefix="/api/saved")  # ✅ good short route
+app.include_router(summary.router, prefix="/api/summary")
 
-    # Flatten to return combined seller data
-    return [{
-        "seller_id": item["seller_id"],
-        "seller_name": item["sellers"]["seller_name"],
-        "product_count": len(item["sellers"]["asin_snapshot"]),
-        "last_checked": item["sellers"]["last_checked"]
-    } for item in data]
+@app.get("/")
+def root():
+    return {"message": "Amazon Seller Tracker API running"}
 
-@router.post("/track-seller", summary="Track a new seller")
-def track_seller(payload: TrackSellerIn, user_id: str = Depends(get_current_user_id)):
-    supabase = get_supabase_client()
-    seller_id = payload.seller_id
+@app.get("/debug/routes")
+def debug_routes():
+    """Debug endpoint to see all registered routes"""
+    routes = []
+    for route in app.routes:
+        if hasattr(route, 'path'):
+            routes.append({
+                "path": route.path,
+                "methods": getattr(route, 'methods', []),
+                "name": getattr(route, 'name', 'Unknown')
+            })
+    return {"routes": routes}
 
-    # Check if seller exists globally
-    existing = supabase.table("sellers").select("*").eq("seller_id", seller_id).execute().data
-    if not existing:
-        # Create new global seller entry with empty ASIN snapshot
-        supabase.table("sellers").insert({
-            "id": str(uuid.uuid4()),
-            "seller_id": seller_id,
-            "seller_name": payload.seller_name,
-            "asin_snapshot": [],
-            "last_checked": None
-        }).execute()
+@app.post("/api/track-seller")
+def direct_track_seller():
+    """Direct route for track-seller to test if router is the issue"""
+    return {"message": "Direct track-seller endpoint works", "status": "success"}
 
-    # Link this user to the seller
-    supabase.table("tracked_sellers").insert({
-        "user_id": user_id,
-        "seller_id": seller_id,
-        "created_at": datetime.utcnow().isoformat()
-    }).execute()
+@app.post("/api/test-track-seller")
+def test_track_seller():
+    """Test endpoint to verify routing"""
+    return {"message": "Test track-seller endpoint works", "status": "success"}
 
-    # Add to queue
-    supabase.table("queue").insert({
-        "seller_id": seller_id,
-        "scheduled_at": datetime.utcnow().isoformat(),
-        "retry_count": 0,
-        "status": "queued"
-    }).execute()
-
-    return {"status": "tracking", "seller_id": seller_id}
-
-@router.delete("/{seller_id}", summary="Untrack a seller")
-def untrack_seller(seller_id: str, user_id: str = Depends(get_current_user_id)):
-    supabase = get_supabase_client()
-
-    # Remove link
-    supabase.table("tracked_sellers").delete().eq("user_id", user_id).eq("seller_id", seller_id).execute()
-
-    # Check if other users still tracking
-    remaining = supabase.table("tracked_sellers").select("*").eq("seller_id", seller_id).execute().data
-    if not remaining:
-        # Remove seller + queue entry if nobody else tracking
-        supabase.table("sellers").delete().eq("seller_id", seller_id).execute()
-        supabase.table("queue").delete().eq("seller_id", seller_id).execute()
-
-    return {"status": "untracked", "seller_id": seller_id}
+@app.options("/{full_path:path}")
+async def options_handler(request):
+    """Handle OPTIONS requests explicitly"""
+    return {"message": "OK"}
