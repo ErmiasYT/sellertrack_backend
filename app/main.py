@@ -1,17 +1,18 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.cors import CORSMiddleware
 from app.auth.supabase_jwt import verify_jwt_token
 from app.auth.supabase_jwt import get_current_user_id  
 from app.api import auth, user, seller, alerts, saved_products, summary
-from fastapi.middleware.cors import CORSMiddleware
+from app.config import settings
+
 
 app = FastAPI()
 
 # CORS settings (adjust if frontend is hosted elsewhere)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-    CORS_ORIGINS = os.getenv("CORS_ORIGINS", "").split(",")
+    allow_origins=settings.CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
