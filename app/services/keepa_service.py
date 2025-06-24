@@ -2,13 +2,15 @@ import keepa
 from app.config import settings
 from typing import List, Dict, Optional
 
-# Initialize Keepa client
-keepa_api = keepa.Keepa(settings.KEEPPA_API_KEY)
+
 
 def fetch_seller_asins(seller_id: str) -> List[str]:
     """
     Gets all ASINs currently listed by the seller using Keepa partial paging.
     """
+    # Initialize Keepa client
+    keepa_api = keepa.Keepa(settings.KEEPPA_API_KEY)
+    
     try:
         response = keepa_api.query(
             seller_id=seller_id,
