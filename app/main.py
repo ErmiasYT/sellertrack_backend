@@ -1,5 +1,4 @@
 import logging
-logging.basicConfig(level=logging.DEBUG)
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -27,25 +26,26 @@ app.add_middleware(
 # 4) JWT layer via add_middleware
 class JWTMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
-        # allow OPTIONS through
+        # Log raw header
+        logging.debug(f"[JWT DEBUG] incoming Authorization header: {request.headers.get('authorization')!r}")
+
+        # Let OPTIONS through immediately
         if request.method == "OPTIONS":
             return JSONResponse(status_code=200, content={})
 
-        # log whatever header we see
-        auth_header = request.headers.get("authorization")
-        logging.debug(f"[JWT DEBUG] incoming Authorization header: {auth_header!r}")
-
-        # run your existing verifier
-        response = await verify_jwt_token(request, call_next)
-        return response
+        # Run your existing verifier (which will log token decode errors)
+        return await verify_jwt_token(request, call_next)
 
 app.add_middleware(JWTMiddleware)
 
 # 5) Debug endpoint to echo headers
 @app.post("/api/debug-headers")
 async def debug_headers(request: Request):
-    headers = {k: v for k, v in request.headers.items()}
-    return JSONResponse(headers)
+    try:
+        return JSONResponse({k: v for k, v in request.headers.items()})
+    except Exception as e:
+        logging.exception("debug-headers failed")
+        return JSONResponse({"error": str(e)}, status_code=500)
 
 # Route groups (router files have no global dependencies)
 app.include_router(auth.router,          prefix="/api/auth")
