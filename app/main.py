@@ -1,3 +1,6 @@
+import logging
+logging.basicConfig(level=logging.DEBUG)
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -22,6 +25,11 @@ class JWTMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request, call_next):
         # verify_jwt_token should let OPTIONS through or return a Response
         return await verify_jwt_token(request, call_next)
+
+@app.post("/api/debug-headers")
+async def debug_headers(request: Request):
+    # return every incoming header so we can inspect them
+    return JSONResponse({k: v for k, v in request.headers.items()})
 
 
 # Route groups (router files have no global dependencies)
