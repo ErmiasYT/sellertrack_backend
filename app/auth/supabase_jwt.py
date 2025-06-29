@@ -1,4 +1,5 @@
 # app/auth/supabase_jwt.py
+
 from fastapi import Request, HTTPException, Response
 from fastapi.security import HTTPBearer
 from jose import jwt, JWTError
@@ -6,28 +7,27 @@ from app.config import settings
 
 bearer_scheme = HTTPBearer(auto_error=False)
 
-
 async def verify_jwt_token(request: Request, call_next):
-    # --- allow CORS pre-flight to pass straight through -------------
+    # allow CORS pre-flight
     if request.method == "OPTIONS":
         return Response(status_code=200)
-    # ---------------------------------------------------------------
 
     credentials = await bearer_scheme(request)
     if credentials:
         token = credentials.credentials
-
-        # —— DEBUG: dump the secret and token ——
-        logging.debug(f"JWT_SECRET (len={len(settings.JWT_SECRET)}): {settings.JWT_SECRET!r}")
-        logging.debug(f"Incoming token (len={len(token)}): {token!r}")
-        
         try:
-            payload = jwt.decode(token, settings.JWT_SECRET, algorithms=["HS256"])
+            payload = jwt.decode(
+                token,
+                settings.JWT_SECRET,
+                algorithms=["HS256"],
+                options={"verify_aud": False},   # ← skip audience check
+            )
             request.state.user_id = payload.get("sub")
         except JWTError:
-            raise HTTPException(status_code=401, detail="Invalid token")
+            raise HTTPException(status_code=401, detail="Invalid or expired token")
     else:
-        request.state.user_id = None  # allow unauthenticated access to public routes
+        # no token provided → treat as public route
+        request.state.user_id = None
 
     return await call_next(request)
 
