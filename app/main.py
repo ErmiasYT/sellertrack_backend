@@ -7,9 +7,6 @@ from app.api import auth, user, seller, alerts, saved_products, summary
 
 app = FastAPI()
 
-# ── JWT / other middleware AFTER CORS ───────────────────────────────────
-app.middleware("http")(verify_jwt_token)
-# ────────────────────────────────────────────────────────────────────────
 
 # ── CORS FIRST ──────────────────────────────────────────────────────────
 app.add_middleware(
@@ -19,6 +16,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# ── JWT / other middleware AFTER CORS ───────────────────────────────────
+app.middleware("http")(verify_jwt_token)
+# ────────────────────────────────────────────────────────────────────────
 
 # Route groups (router files have no global dependencies)
 app.include_router(auth.router,          prefix="/api/auth")
