@@ -22,12 +22,8 @@ app.add_middleware(
 
 # 4) JWT layer via add_middleware
 class JWTMiddleware(BaseHTTPMiddleware):
-    async def dispatch(self, request: Request, call_next):
-        # allow preflight through
-        if request.method == "OPTIONS":
-            return await call_next(request)
-
-        # perform your JWT verification
+    async def dispatch(self, request, call_next):
+        # verify_jwt_token should let OPTIONS through or return a Response
         return await verify_jwt_token(request, call_next)
 
 app.add_middleware(JWTMiddleware)
