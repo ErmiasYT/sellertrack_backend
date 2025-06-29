@@ -1,15 +1,11 @@
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 from app.auth.supabase_jwt import verify_jwt_token   # your JWT middleware
 from app.config import settings
 from app.api import auth, user, seller, alerts, saved_products, summary
 
-
-# 2) Log the secret on startup
-logging.debug(f"[STARTUP] JWT_SECRET={settings.JWT_SECRET!r}")
 
 app = FastAPI()
 
