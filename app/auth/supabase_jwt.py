@@ -16,6 +16,11 @@ async def verify_jwt_token(request: Request, call_next):
     credentials = await bearer_scheme(request)
     if credentials:
         token = credentials.credentials
+
+        # —— DEBUG: dump the secret and token ——
+        logging.debug(f"JWT_SECRET (len={len(settings.JWT_SECRET)}): {settings.JWT_SECRET!r}")
+        logging.debug(f"Incoming token (len={len(token)}): {token!r}")
+        
         try:
             payload = jwt.decode(token, settings.JWT_SECRET, algorithms=["HS256"])
             request.state.user_id = payload.get("sub")
