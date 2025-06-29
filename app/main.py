@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware
 from app.auth.supabase_jwt import verify_jwt_token   # your JWT middleware
 from app.config import settings
 from app.api import auth, user, seller, alerts, saved_products, summary
@@ -17,8 +18,11 @@ app.add_middleware(
 )
 
 # ── JWT / other middleware AFTER CORS ───────────────────────────────────
-app.middleware("http")(verify_jwt_token)
-# ────────────────────────────────────────────────────────────────────────
+class JWTMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request, call_next):
+        # verify_jwt_token should let OPTIONS through or return a Response
+        return await verify_jwt_token(request, call_next)
+
 
 # Route groups (router files have no global dependencies)
 app.include_router(auth.router,          prefix="/api/auth")
